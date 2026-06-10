@@ -29,7 +29,7 @@ class Document(Base):
     programme = Column(String) # PT2030, PRR, EU
     language = Column(String, default="pt")
     instrument_scope = Column(String)
-    document_type = Column(Enum(DocumentCategory), default=DocumentCategory.UNKNOWN)
+    document_type = Column(String, default="unknown")
     local_path = Column(String) # path to downloaded raw file
     processed_path = Column(String) # path to processed json/md file
     created_at = Column(DateTime, default=datetime.utcnow)

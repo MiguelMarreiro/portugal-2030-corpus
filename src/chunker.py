@@ -60,12 +60,25 @@ class ClassifierTagger:
         text_lower = text[:5000].lower() # Search in the first 5000 chars
 
         document_type = "unknown"
-        for cat, patterns in self.categories.items():
-            if any(re.search(p, filename_lower) for p in patterns) or \
-               any(re.search(p, text_lower) for p in patterns):
-                document_type = cat
-                # prioritize form_guide over general guide
-                if cat == "form_guide":
+        
+        # 1. Strong filename heuristics
+        if filename_lower.startswith('blog_'):
+            document_type = "blog"
+        elif filename_lower.startswith('dr_'):
+            document_type = "regulation"
+        elif "manual" in filename_lower or filename_lower.startswith('mp_'):
+            document_type = "manual"
+        elif "guia" in filename_lower:
+            document_type = "form_guide" if "formul" in filename_lower or "preenchimento" in filename_lower else "guide"
+        elif filename_lower.startswith('methodology_'):
+            document_type = "methodology"
+        elif "aviso" in filename_lower or "plano" in filename_lower:
+            document_type = "call_listing"
+        else:
+            # 2. Fallback to text content checking
+            for cat, patterns in self.categories.items():
+                if any(re.search(p, text_lower) for p in patterns):
+                    document_type = cat
                     break
 
         programme = "unknown"
