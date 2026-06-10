@@ -232,6 +232,31 @@ class IapmeiSpider(StaticCrawler):
             print(f"Error in IapmeiSpider: {e}")
             return []
 
+    def scrape_info_pages(self, urls):
+        print(f"Scraping IAPMEI Info Pages from {len(urls)} links.")
+        downloaded = []
+        for url in urls:
+            parsed = urlparse(url)
+            # Use 'guia_' prefix so our heuristics classify this correctly
+            filename = f"guia_iapmei_{os.path.basename(parsed.path)}.txt"
+            if not filename.endswith('.txt'):
+                filename += '.txt'
+            filepath = os.path.join(self.output_dir, filename.replace('/', '_'))
+            
+            try:
+                # Use Playwright for IAPMEI pages as they often rely on dynamic ASPX rendering
+                content = self.scrape_with_playwright(url, selector="#conteudo, .conteudo, main")
+                if not content or len(content) < 100:
+                    content = self.scrape_with_playwright(url, selector="body")
+                
+                if content:
+                    with open(filepath, 'w', encoding='utf-8') as f:
+                        f.write(f"Source: {url}\n\n{content}")
+                    downloaded.append(filepath)
+            except Exception as e:
+                print(f"Error fetching IAPMEI info page {url}: {e}")
+        return downloaded
+
 class PrrSpider(StaticCrawler):
     def fetch_manuals(self, urls):
         print(f"Fetching PRR manuals from {len(urls)} links.")

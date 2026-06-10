@@ -32,6 +32,14 @@ def main():
     # 2. IAPMEI
     iapmei = IapmeiSpider()
     iapmei.scrape_concursos()
+    iapmei_info_targets = [
+        "https://www.iapmei.pt/PRODUTOS-E-SERVICOS/Qualificacao-Certificacao/Certificacao-PME/Certificacao-PME.aspx",
+        "https://www.iapmei.pt/PRODUTOS-E-SERVICOS/Qualificacao-Certificacao/Certificacao-PME/Manual-de-Certificacao-PME.aspx",
+        "https://www.iapmei.pt/PRODUTOS-E-SERVICOS/Qualificacao-Certificacao/Certificacao-PME/FAQ-Certificacao-PME.aspx",
+        "https://www.iapmei.pt/PRODUTOS-E-SERVICOS/Qualificacao-Certificacao/Estatuto-PME-Lider/Estatuto-PME-Lider.aspx",
+        "https://www.iapmei.pt/PRODUTOS-E-SERVICOS/Qualificacao-Certificacao/Certificacao-PME/Guia-Pratico.aspx"
+    ]
+    iapmei.scrape_info_pages(iapmei_info_targets)
 
     # 3. PRR
     prr = PrrSpider()
