@@ -11,18 +11,27 @@ class HierarchicalChunker:
         For now, does a basic paragraph split that respects max_chunk_size.
         Can be enhanced to look for 'Artigo X' or 'Anexo Y'.
         """
+        # Junk filters
+        spam_patterns = ["página não encontrada", "sítio utiliza cookies", "pedimos-lhe desculpa pela situação", "copyright iapmei"]
+
         paragraphs = text.split("\n\n")
         chunks = []
         current_chunk_text = ""
         
         for p in paragraphs:
+            # Cleansing
+            p_lower = p.lower()
+            if any(spam in p_lower for spam in spam_patterns):
+                continue
+                
             if len(current_chunk_text) + len(p) > self.max_chunk_size and current_chunk_text:
-                chunks.append(self._create_chunk_dict(current_chunk_text, base_metadata))
+                if len(current_chunk_text.strip()) > 50:
+                    chunks.append(self._create_chunk_dict(current_chunk_text, base_metadata))
                 current_chunk_text = p
             else:
                 current_chunk_text += "\n\n" + p if current_chunk_text else p
                 
-        if current_chunk_text:
+        if current_chunk_text and len(current_chunk_text.strip()) > 50:
             chunks.append(self._create_chunk_dict(current_chunk_text, base_metadata))
             
         return chunks

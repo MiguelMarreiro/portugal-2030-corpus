@@ -47,9 +47,15 @@ class StaticCrawler:
         """Fallback for complex/dynamic sources."""
         print(f"Playwright fallback: fetching {url}")
         try:
+            from playwright_stealth import stealth_sync
             with sync_playwright() as p:
                 browser = p.chromium.launch(headless=True)
-                page = browser.new_page()
+                # Adicionar User-Agent realista
+                context = browser.new_context(
+                    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                )
+                page = context.new_page()
+                stealth_sync(page)
                 page.goto(url, wait_until="networkidle")
                 content = page.locator(selector).inner_text() if page.locator(selector).count() > 0 else page.locator("body").inner_text()
                 browser.close()
